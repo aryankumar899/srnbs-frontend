@@ -1,0 +1,3 @@
+1. Store Applicaton form in backend 
+2. Call API for State/University
+3. Integrate SMS/Email services for sending credentials information    {MSG91/Fast2Sms}
