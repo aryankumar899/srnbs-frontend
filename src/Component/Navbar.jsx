@@ -11,7 +11,8 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/srnbs_logo.png";
 import { FaUserCircle } from "react-icons/fa";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -20,12 +21,9 @@ const Navbar = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isScrollingDown, setIsScrollingDown] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("username"));
 
-  // Simulate login check using localStorage
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("username")
-  );
-
+  // Scroll behavior
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -38,6 +36,33 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  // Auto logout after 30 minutes
+  useEffect(() => {
+    if (isLoggedIn) {
+      const now = Date.now();
+      const THIRTY_MINUTES = 30 * 60 * 1000;
+
+      let loginTime = localStorage.getItem("loginTime");
+      if (!loginTime) {
+        localStorage.setItem("loginTime", now.toString());
+        loginTime = now.toString();
+      }
+
+      const timeElapsed = now - parseInt(loginTime, 10);
+      if (timeElapsed >= THIRTY_MINUTES) {
+        handleLogout();
+        return;
+      }
+
+      const remainingTime = THIRTY_MINUTES - timeElapsed;
+      const timer = setTimeout(() => {
+        handleLogout();
+      }, remainingTime);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLoggedIn]);
+
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Services", path: "/services" },
@@ -47,9 +72,13 @@ const Navbar = () => {
   ];
 
   const handleLogout = () => {
-    localStorage.clear(); // Clear stored login data
+    localStorage.clear();
     setIsLoggedIn(false);
-    navigate("/"); // Redirect to homepage
+    navigate("/");
+    toast.info("You have been logged out due to 30 minutes of inactivity.", {
+      position: "top-center",
+      autoClose: 4000,
+    });
   };
 
   return (
@@ -159,7 +188,7 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Hamburger Icon (mobile) */}
+        {/* Hamburger Icon */}
         <div className="md:hidden">
           <button onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
@@ -191,8 +220,6 @@ const Navbar = () => {
                   </Link>
                 </motion.div>
               ))}
-
-              {/* Profile options in mobile view */}
               {isLoggedIn && (
                 <div className="text-center space-y-2">
                   <Link

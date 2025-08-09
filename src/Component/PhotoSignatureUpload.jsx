@@ -5,6 +5,16 @@ const PhotoSignatureUpload = () => {
   const [photo, setPhoto] = useState(null);
   const [signature, setSignature] = useState(null);
 
+  // Convert file to base64 string
+  const toBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // Read as base64
+      reader.onload = () => resolve(reader.result.split(',')[1]); // Remove prefix
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   // File validations
   const validateFile = (file, type) => {
     const isJPG = file.type === "image/jpeg" || file.type === "image/jpg";
@@ -23,17 +33,19 @@ const PhotoSignatureUpload = () => {
     return true;
   };
 
-  const handlePhotoChange = (e) => {
+  const handlePhotoChange = async (e) => {
     const file = e.target.files[0];
     if (file && validateFile(file, "photo")) {
-      setPhoto(URL.createObjectURL(file));
+      const base64 = await toBase64(file);
+      setPhoto({ preview: URL.createObjectURL(file), base64 });
     }
   };
 
-  const handleSignatureChange = (e) => {
+  const handleSignatureChange = async (e) => {
     const file = e.target.files[0];
     if (file && validateFile(file, "signature")) {
-      setSignature(URL.createObjectURL(file));
+      const base64 = await toBase64(file);
+      setSignature({ preview: URL.createObjectURL(file), base64 });
     }
   };
 
@@ -46,13 +58,25 @@ const PhotoSignatureUpload = () => {
       return;
     }
 
-    // You can replace this with actual submission logic (e.g., API call)
-    console.log("Form submitted successfully!");
-    alert("Form submitted successfully!");
+    // Merge with existing applicationData
+    const existingData = JSON.parse(localStorage.getItem("applicationData")) || {};
+
+    const updatedData = {
+      ...existingData,
+      photo: photo.base64,
+      signature: signature.base64,
+    };
+
+    // Save final application data
+    localStorage.setItem("applicationData", JSON.stringify(updatedData));
+
+    console.log("📦 Final Data to be sent to server:", updatedData);
+    alert("✅ All data saved! Ready to be submitted to backend.");
   };
 
   return (
     <div className="max-w-3xl mx-auto mt-40 p-6 bg-white shadow-md rounded">
+      {/* Steps Indicator */}
       <div className="flex justify-between mb-8 relative">
         {["BASIC DETAILS", "ADDITIONAL AND CONTACT DETAILS", "PHOTO AND SIGNATURE DETAILS"].map((step, i) => (
           <div key={i} className="flex-1 flex flex-col items-center relative z-10">
@@ -73,15 +97,13 @@ const PhotoSignatureUpload = () => {
 
       <h2 className="text-2xl font-bold mb-6 text-blue-800">Photo and Signature</h2>
 
-      {/* Upload Photo */}
+      {/* Photo Upload */}
       <div className="mb-8">
         <label className="block font-semibold mb-2">
           19. Upload Photo <span className="text-red-500">*</span>
         </label>
         <p className="text-sm text-gray-600 mb-1">
-          Allowed File Size: <strong>20 KB to 50 KB</strong><br />
-          Format: JPEG/JPG<br />
-          Image Size: About 3.5 cm (width) x 4.5 cm (height)
+          File Size: <strong>20 KB – 50 KB</strong> | Format: JPG/JPEG
         </p>
         <div className="flex items-center gap-4 mt-2">
           <input type="file" accept="image/jpeg, image/jpg" onChange={handlePhotoChange} />
@@ -95,7 +117,7 @@ const PhotoSignatureUpload = () => {
         </div>
         {photo && (
           <div className="relative mt-4 w-32 h-40 border rounded overflow-hidden">
-            <img src={photo} alt="Uploaded" className="w-full h-full object-cover" />
+            <img src={photo.preview} alt="Uploaded" className="w-full h-full object-cover" />
             <button
               onClick={removePhoto}
               className="absolute top-0 right-0 bg-white rounded-full p-1 text-black shadow"
@@ -106,15 +128,13 @@ const PhotoSignatureUpload = () => {
         )}
       </div>
 
-      {/* Upload Signature */}
+      {/* Signature Upload */}
       <div>
         <label className="block font-semibold mb-2">
           20. Upload Signature <span className="text-red-500">*</span>
         </label>
         <p className="text-sm text-gray-600 mb-1">
-          Allowed File Size: <strong>10 KB to 20 KB</strong><br />
-          Format: JPEG/JPG<br />
-          Image Size: About 4.0 cm (width) x 3.0 cm (height)
+          File Size: <strong>10 KB – 20 KB</strong> | Format: JPG/JPEG
         </p>
         <div className="flex items-center gap-4 mt-2">
           <input type="file" accept="image/jpeg, image/jpg" onChange={handleSignatureChange} />
@@ -128,7 +148,7 @@ const PhotoSignatureUpload = () => {
         </div>
         {signature && (
           <div className="relative mt-4 w-40 h-24 border rounded overflow-hidden">
-            <img src={signature} alt="Signature" className="w-full h-full object-cover" />
+            <img src={signature.preview} alt="Signature" className="w-full h-full object-cover" />
             <button
               onClick={removeSignature}
               className="absolute top-0 right-0 bg-white rounded-full p-1 text-black shadow"
@@ -139,26 +159,25 @@ const PhotoSignatureUpload = () => {
         )}
       </div>
 
-    <div className="mt-8 flex justify-center gap-4">
-      <Link to="/application-form/additional-contact-details">
-  <button
-    type="button"
-    onClick={() => window.history.back()}
-    className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
-  >
-    Previous
-  </button>
-  </Link>
-  <button
-    type="button"
-    onClick={handleSubmit}
-    className="bg-sky-800 hover:bg-sky-700 cursor-pointer text-white font-semibold py-2 px-6 rounded"
-  >
-    Submit
-  </button>
-</div>
-
-
+      {/* Buttons */}
+      <div className="mt-8 flex justify-center gap-4">
+        <Link to="/application-form/additional-contact-details">
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
+          >
+            Previous
+          </button>
+        </Link>
+        <button
+          type="button"
+          onClick={handleSubmit}
+          className="bg-sky-800 hover:bg-sky-700 cursor-pointer text-white font-semibold py-2 px-6 rounded"
+        >
+          Submit
+        </button>
+      </div>
     </div>
   );
 };

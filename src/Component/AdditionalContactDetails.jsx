@@ -4,11 +4,24 @@ import { Link } from "react-router-dom";
 const AdditionalContactDetails = () => {
   const [hasDisability, setHasDisability] = useState(false);
   const [sameAddress, setSameAddress] = useState(true);
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("✅ Form submitted!");
-  };
+  const formData = new FormData(e.target);
+  const currentStageData = Object.fromEntries(formData.entries());
+
+  // Get existing data from localStorage
+  const existingData = JSON.parse(localStorage.getItem("applicationData")) || {};
+
+  // Merge current stage data with existing
+  const updatedData = { ...existingData, ...currentStageData };
+
+  // Save updated data to localStorage
+  localStorage.setItem("applicationData", JSON.stringify(updatedData));
+
+  alert("✅ Stage 2 data saved successfully!");
+};
+
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white shadow-md rounded mt-40">

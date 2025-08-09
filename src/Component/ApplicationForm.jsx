@@ -3,16 +3,47 @@ import { Link } from "react-router-dom";
 
 const ApplicationForm = () => {
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const form = e.target;
+  e.preventDefault();
+  const form = e.target;
 
-    if (!form.checkValidity()) {
-      alert("⚠️ Please fill in all required fields before submitting the form.");
-      return;
-    }
+  if (!form.checkValidity()) {
+    alert("⚠️ Please fill in all required fields before submitting the form.");
+    return;
+  }
 
-    alert("✅ Form submitted successfully!");
+  // Collect data from form
+  const formData = {
+    full_name: form.fullNName.value,
+    father_name: form.fatherName.value,
+    mother_name: form.motherName.value,
+    dob: form.dob.value,
+
+    matric_board: form.matricBoard.value,
+    matric_yop: form.matricYear.value,
+
+    intermediate_board: form.interBoard.value,
+    intermediate_yop: form.interYear.value,
+
+    ug_college: form.ugCollege.value,
+    ug_yop: form.ugYear.value,
+
+    gender: form.gender.value,
+    high_qualification: form.educationLevel.value,
+
+    phone: form.mobile.value,
+    email: form.email.value,
+
+    state_permanent: form.state.value,
   };
+
+  // Save to localStorage
+  localStorage.setItem("applicationData", JSON.stringify(formData));
+  console.log(localStorage.getItem("applicationData"))
+  
+
+  alert("✅ Stage 1 data saved to localStorage!");
+};
+
 
   return (
     <div className="max-w-6xl mx-auto p-4 bg-white shadow-md rounded mt-40">
@@ -37,7 +68,7 @@ const ApplicationForm = () => {
       <form className="space-y-6" onSubmit={handleSubmit}>
            <Input
           label="Name of the Applicant"
-          name="fatherName"
+          name="fullNName"
           note="Same as in Matriculation Certificate (no salutation)."
           required
         />
