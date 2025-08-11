@@ -1,5 +1,7 @@
 import React from 'react'
 import { Route,Routes } from 'react-router-dom';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
 import HomePage from '../src/Pages/HomePage'
 import ApplicationPage from '../src/Pages/ApplicationPage'
 import ClientReg from '../src/Pages/ClientReg'
@@ -17,7 +19,7 @@ const App = () => {
     <main>
             <ScrollToTop/>
       <Navbar/>
-
+      <ToastContainer position="top-center" autoClose={3000} />
       <Routes>
         <Route path='/' element={<HomePage/>}/>
         <Route path='/apply' element={<ApplicationPage/>}/>

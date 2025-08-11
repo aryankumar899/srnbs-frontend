@@ -35,7 +35,7 @@ const owners = [
     image: Hr,
   },
   {
-    name: "Suman Gupta",
+    name: "Suman Kumar",
     role: "Agency head",
     image: AgencyHead,
   },

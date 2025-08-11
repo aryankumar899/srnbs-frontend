@@ -1,2 +1,8 @@
 @import "tailwindcss";
 
+/* App.css ya global CSS me */
+.Toastify__toast-container {
+  z-index: 99999 !important; /* Navbar se zyada rakho */
+}
+
+

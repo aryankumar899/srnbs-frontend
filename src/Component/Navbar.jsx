@@ -75,8 +75,8 @@ const Navbar = () => {
     localStorage.clear();
     setIsLoggedIn(false);
     navigate("/");
-    toast.info("You have been logged out due to 30 minutes of inactivity.", {
-      position: "top-center",
+    toast.info("Logout Successfully", {
+      position: "top-center ",
       autoClose: 4000,
     });
   };
@@ -169,7 +169,7 @@ const Navbar = () => {
                 {localStorage.getItem("username") || "Profile"}
               </button>
               {showProfileMenu && (
-                <div className="absolute top-8 right-0 bg-white border rounded shadow-lg z-50 w-40">
+                <div className="absolute top-15 right-0 bg-white border rounded shadow-lg z-50 w-40">
                   <Link
                     to="/edit-profile"
                     className="block px-4 py-2 hover:bg-gray-100 text-sm"

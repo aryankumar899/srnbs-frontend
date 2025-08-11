@@ -1,24 +1,37 @@
 import React from "react";
 import banner from "../assets/application-banner.jpg";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
+// Sample login check — replace with your actual auth state (e.g., from context)
+const isLoggedIn = false; // Example: useAuth().isLoggedIn
 
 const applications = [
   {
     title: "Online Application for JJTC-2023",
-    link: "/client-registration",
   },
   {
     title: "Online Application for JTMACCE-2025",
-    link: "/client-registration",
   },
   {
     title: "Online Application for JSSCE-2024",
-    link: "/client-registration",
   },
 ];
 
 const ApplicationFormsLink = () => {
+  const navigate = useNavigate();
+
+  const isLoggedIn = !!localStorage.getItem("token"); // ✅ Token check
+
+  const handleApplyClick = () => {
+    if (isLoggedIn) {
+      navigate("/application-form");
+    } else {
+      navigate("/client-registration");
+    }
+  };
+
+
+
   return (
     <div className="min-h-screen bg-gray-100 px-4 py-10 mt-27">
       {/* ✅ Banner */}
@@ -55,13 +68,12 @@ const ApplicationFormsLink = () => {
                   <td className="p-3 border-r">{index + 1}</td>
                   <td className="p-3 border-r">{app.title}</td>
                   <td className="p-3">
-                    <Link to={app.link} className="text-blue-600 hover:underline">
-                      <span
-                        className="inline-block w-32 text-center bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200"
-                      >
-                        Apply Now
-                      </span>
-                    </Link>
+                    <button
+                      onClick={handleApplyClick}
+                      className="inline-block w-32 text-center bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200"
+                    >
+                      Apply Now
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -80,12 +92,12 @@ const ApplicationFormsLink = () => {
                 <span className="font-semibold">#{index + 1}</span> –{" "}
                 {app.title}
               </p>
-              <a
-                href={app.link}
+              <button
+                onClick={handleApplyClick}
                 className="inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200"
               >
                 Apply Now
-              </a>
+              </button>
             </div>
           ))}
         </div>
