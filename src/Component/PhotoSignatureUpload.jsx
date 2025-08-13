@@ -33,46 +33,64 @@ const PhotoSignatureUpload = () => {
     return true;
   };
 
-  const handlePhotoChange = async (e) => {
-    const file = e.target.files[0];
-    if (file && validateFile(file, "photo")) {
-      const base64 = await toBase64(file);
-      setPhoto({ preview: URL.createObjectURL(file), base64 });
-    }
-  };
+ const handlePhotoChange = async (e) => {
+  const file = e.target.files[0];
+  if (file && validateFile(file, "photo")) {
+    const base64 = await toBase64(file);
+    setPhoto({ preview: URL.createObjectURL(file), base64, file });
+  }
+};
 
-  const handleSignatureChange = async (e) => {
-    const file = e.target.files[0];
-    if (file && validateFile(file, "signature")) {
-      const base64 = await toBase64(file);
-      setSignature({ preview: URL.createObjectURL(file), base64 });
-    }
-  };
-
+const handleSignatureChange = async (e) => {
+  const file = e.target.files[0];
+  if (file && validateFile(file, "signature")) {
+    const base64 = await toBase64(file);
+    setSignature({ preview: URL.createObjectURL(file), base64, file });
+  }
+};
   const removePhoto = () => setPhoto(null);
   const removeSignature = () => setSignature(null);
 
-  const handleSubmit = () => {
-    if (!photo || !signature) {
-      alert("Please upload both Photo and Signature before submitting.");
-      return;
+const handleSubmit = async () => {   // <-- add async here
+  if (!photo || !signature) {
+    alert("Please upload both Photo and Signature before submitting.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("photo", photo.file);
+  formData.append("signature", signature.file);
+
+  try {
+    const res = await fetch("http://localhost:5000/api/upload", {
+      method: "POST",
+      body: formData
+    });
+    const data = await res.json();
+    console.log("✅ Uploaded to Cloudinary:", data);
+
+    if (res.ok) {
+      alert("Uploaded successfully!");
+    } else {
+      alert("Upload failed: " + data.error);
     }
+  } catch (err) {
+    console.error(err);
+    alert("Error uploading files.");
+  }
 
-    // Merge with existing applicationData
-    const existingData = JSON.parse(localStorage.getItem("applicationData")) || {};
-
-    const updatedData = {
-      ...existingData,
-      photo: photo.base64,
-      signature: signature.base64,
-    };
-
-    // Save final application data
-    localStorage.setItem("applicationData", JSON.stringify(updatedData));
-
-    console.log("📦 Final Data to be sent to server:", updatedData);
-    alert("✅ All data saved! Ready to be submitted to backend.");
+  const existingData = JSON.parse(localStorage.getItem("applicationData")) || {};
+  const updatedData = {
+    ...existingData,
+    photo: photo.base64,
+    signature: signature.base64,
   };
+
+  localStorage.setItem("applicationData", JSON.stringify(updatedData));
+  console.log("📦 Final Data to be sent to server:", updatedData);
+  alert("✅ All data saved! Ready to be submitted to backend.");
+};
+  
 
   return (
     <div className="max-w-3xl mx-auto mt-40 p-6 bg-white shadow-md rounded">

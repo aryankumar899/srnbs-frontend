@@ -11,7 +11,7 @@ import Chairman from "../assets/chairman.jpg";
 import Hr from "../assets/hr.jpg";
 import AgencyHead from "../assets/agencyHead.jpg";
 import SkillHead from "../assets/skillHead.jpg";
-import DirectorHead from "../assets/diretorOperation.jpg"
+import DirectorHead from "../assets/diretorOperation.jpg";
 
 const owners = [
   {
@@ -88,7 +88,7 @@ const OwnerSection = () => {
         breakpoints={{
           320: { slidesPerView: 1 },
           640: { slidesPerView: 2 },
-          1024: { slidesPerView: 3 },
+          1024: { slidesPerView: 4 }, // Changed from 3 to 4 for desktop
         }}
         className="w-full max-w-7xl mx-auto"
       >

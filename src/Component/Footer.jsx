@@ -4,7 +4,7 @@ import logo from "../assets/srnbs_logo.png";
 
 const Footer = () => {
   return (
-    <footer className="bg-sky-900 text-white pt-10 pb-6 px-6 md:px-20 mt-80">
+    <footer className="bg-sky-900 text-white pt-10 pb-6 px-6 md:px-20 mt-10">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 border-b border-sky-700 pb-8">
         {/* Branding */}
         <div>
